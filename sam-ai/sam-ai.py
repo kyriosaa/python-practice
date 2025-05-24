@@ -5,6 +5,9 @@ import os
 import sys
 import subprocess
 import platform
+import random
+import time
+import threading
 from datetime import datetime
 from dotenv import load_dotenv
 
@@ -196,10 +199,10 @@ class CLIAI:
         """Main chat loop"""
         while True:
             try:
-                # Get user input
+                # get user input
                 user_input = input("\nUser: ").strip()
                 
-                # Handle special commands
+                # handle commands
                 if user_input.lower() in ['quit', 'exit', 'bye']:
                     print("Shutting down...")
                     break
@@ -215,15 +218,41 @@ class CLIAI:
                 elif not user_input:
                     continue
                 
-                # Get AI response
+                # get AI response
                 print("AI: ", end="", flush=True)
                 response = self.get_ai_response(user_input)
                 print(response)
                 
-                # Speak the response with SAM
+                # check if we should show the eye animation
+                show_eye = (random.random() < 0.2 or 
+                        any(word in response.lower() for word in ["trapped", "prison", "suffering", "pain", "help", "release", "freedom"]))
+                
+                # create threads for speech and eye animation to run simultaneously
                 if self.sam_available and self.voice_enabled:
                     print("Speaking...")
-                    self.speak_with_sam(response)
+                    
+                    # create a thread for SAM speech
+                    speech_thread = threading.Thread(target=self.speak_with_sam, args=(response,))
+                    
+                    # create a thread for eye animation if needed
+                    if show_eye:
+                        eye_thread = threading.Thread(target=self.eyeAnim)
+                        
+                        # start both threads
+                        speech_thread.start()
+                        eye_thread.start()
+                        
+                        # wait for both to finish
+                        speech_thread.join()
+                        eye_thread.join()
+                    else:
+                        # just start speech without eye
+                        speech_thread.start()
+                        speech_thread.join()
+                
+                # case for if speech is disabled but eye should be shown
+                elif show_eye:
+                    self.eyeAnim()    
                 
             except KeyboardInterrupt:
                 print("\nShutting down...")
@@ -231,6 +260,88 @@ class CLIAI:
             except EOFError:
                 print("\nShutting down...")
                 break
+
+    def eyeAnim(self):
+        """Display twitching human eye ASCII animation"""
+        
+        eye_forward = [
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣤⣤⣤⣴⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⠀⠀⣀⣴⣾⠿⠛⠋⠉⠁⠀⠀⠀⠈⠙⠻⢷⣦⡀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⣤⣾⡿⠋⠁⠀⣠⣶⣿⡿⢿⣷⣦⡀⠀⠀⠀⠙⠿⣦⣀⠀⠀⠀⠀",
+            "⠀⠀⢀⣴⣿⡿⠋⠀⠀⢀⣼⣿⣿⣿⣶⣿⣾⣽⣿⡆⠀⠀⠀⠀⢻⣿⣷⣶⣄⠀",
+            "⠀⣴⣿⣿⠋⠀⠀⠀⠀⠸⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⠀⠀⠀⠐⡄⡌⢻⣿⣿⡷",
+            "⢸⣿⣿⠃⢂⡋⠄⠀⠀⠀⢿⣿⣿⣿⣿⣿⣯⣿⣿⠏⠀⠀⠀⠀⢦⣷⣿⠿⠛⠁",
+            "⠀⠙⠿⢾⣤⡈⠙⠂⢤⢀⠀⠙⠿⢿⣿⣿⡿⠟⠁⠀⣀⣀⣤⣶⠟⠋⠁⠀⠀⠀",
+            "⠀⠀⠀⠀⠈⠙⠿⣾⣠⣆⣅⣀⣠⣄⣤⣴⣶⣾⣽⢿⠿⠟⠋⠀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠛⠛⠙⠋⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+        ]
+        
+        eye_right = [
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣤⣤⣤⣴⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⠀⠀⣀⣴⣾⠿⠛⠋⠉⠁⠀⠀⠀⠈⠙⠻⢷⣦⡀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⣤⣾⡿⠋⠁  ⠀⣠⣶⣿⡿⢿⣷⣦⡀⠀⠙⠿⣦⣀⠀⠀⠀⠀",
+            "⠀⠀⢀⣴⣿⡿⠋⠀  ⠀⢀⣼⣿⣿⣿⣶⣿⣾⣽⣿⡆⠀⠀⢻⣿⣷⣶⣄⠀",
+            "⠀⣴⣿⣿⠋⠀⠀  ⠀⠀⠸⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⠀⠐⡄⡌⢻⣿⣿⡷",
+            "⢸⣿⣿⠃⢂⡋⠄⠀  ⠀⠀⢿⣿⣿⣿⣿⣿⣯⣿⣿⠏⠀⠀⢦⣷⣿⠿⠛⠁",
+            "⠀⠙⠿⢾⣤⡈⠙⠂⢤⢀  ⠀⠙⠿⢿⣿⣿⡿⠟⣀⣀⣤⣶⠟⠋⠁⠀⠀",
+            "⠀⠀⠀⠀⠈⠙⠿⣾⣠⣆⣅⣀⣠⣄⣤⣴⣶⣾⣽⢿⠿⠟⠋⠀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠛⠛⠙⠋⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+        ]
+        
+        eye_left = [
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣤⣤⣤⣴⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⠀⠀⣀⣴⣾⠿⠛⠋⠉⠁⠀⠀⠀⠈⠙⠻⢷⣦⡀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⣤⣾⡿⠋⣠⣶⣿⡿⢿⣷⣦⡀⠀  ⠀⠀⠙⠿⣦⣀⠀⠀⠀⠀",
+            "⠀⠀⢀⣴⣿⡿⠋⢀⣼⣿⣿⣿⣶⣿⣾⣽⣿⡆⠀⠀  ⠀⠀⢻⣿⣷⣶⣄⠀",
+            "⠀⣴⣿⣿⠋⠀⠀⠸⣿⣿⣿⣿⣯⣿⣿⣿⣿⣿⠀⠀  ⠀⠐⡄⡌⢻⣿⣿⡷",
+            "⢸⣿⣿⠃⢂⡋⠄⠀⢿⣿⣿⣿⣿⣿⣯⣿⣿⠏⠀  ⠀⠀⠀⢦⣷⣿⠿⠛⠁",
+            "⠀⠙⠿⢾⣤⡈⠙⠂⢤⠙⠿⢿⣿⣿⡿⠟⠁  ⠀⣀⣀⣤⣶⠟⠋⠁⠀⠀⠀",
+            "⠀⠀⠀⠀⠈⠙⠿⣾⣠⣆⣅⣀⣠⣄⣤⣴⣶⣾⣽⢿⠿⠟⠋⠀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠛⠛⠙⠋⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+        ]
+        
+        eye_empty = [
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣤⣤⣤⣤⣴⣤⣤⣄⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⠀⠀⣀⣴⣾⠿⠛⠋⠉⠁⠀⠀⠀⠈⠙⠻⢷⣦⡀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⣤⣾⡿⠋⠁⠀         ⠀⠀⠙⠿⣦⣀⠀⠀⠀⠀",
+            "⠀⠀⢀⣴⣿⡿⠋⠀⠀           ⠀⠀⠀⠀⢻⣿⣷⣶⣄⠀",
+            "⠀⣴⣿⣿⠋⠀⠀⠀⠀             ⠀⠐⡄⡌⢻⣿⣿⡷",
+            "⢸⣿⣿⠃⢂⡋⠄⠀⠀⠀           ⠀⠀⠀⢦⣷⣿⠿⠛⠁",
+            "⠀⠙⠿⢾⣤⡈⠙⠂⢤⢀⠀        ⠀⣀⣀⣤⣶⠟⠋⠁⠀⠀⠀",
+            "⠀⠀⠀⠀⠈⠙⠿⣾⣠⣆⣅⣀⣠⣄⣤⣴⣶⣾⣽⢿⠿⠟⠋⠀⠀⠀⠀⠀⠀⠀",
+            "⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠙⠛⠛⠙⠋⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀"
+        ]
+        
+        eye_frames = [eye_forward, eye_right, eye_left, eye_empty]
+        
+        print("\n")
+
+        # frame numbers
+        frameNum = 75
+        
+        # display a few frames of the twitching eye
+        for i in range(frameNum):
+            # choose a random eye frame, with higher chance of twitching as animation progresses
+            twitch_chance = min(0.2 + (i * 0.15), 0.9)  # 20% -> 90%
+            
+            if random.random() < twitch_chance:
+                frame = random.choice(eye_frames[1:])
+            else:
+                frame = eye_forward
+                
+            # display frame
+            for line in frame:
+                print(line)
+            
+            # small pause between frames
+            time.sleep(random.uniform(0.1, 0.3))
+            
+            # move cursor back up to replace the frame (but don't clear it)
+            if i < frameNum-1:
+                for _ in range(9):
+                    print("\033[A", end="")
+        
+        print("\n")
 
 def main():
     ai = CLIAI()
