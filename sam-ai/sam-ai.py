@@ -43,12 +43,12 @@ class CLIAI:
             print("SAM initialized")
         else:
             print("SAM not found")
-        print("Commands:")
+        print("--- Commands ---")
         print("  - Type your message and press ENTER")
         print("  - Type 'quit', 'exit', or 'bye' to end")
         print("  - Type 'clear' to clear conversation history")
-        print("  - Type 'help' to see this message again")
         print("  - Type 'voice off/on' to toggle SAM voice")
+        print("  - Type 'help' to see this message again")
         print("-" * 50)
         
         self.voice_enabled = True
@@ -193,10 +193,11 @@ class CLIAI:
 
     def show_help(self):
         """Show help message"""
-        print("\n--- AI Commands ---")
+        print("\n--- Commands ---")
         print("  - Type your message and press ENTER")
         print("  - Type 'quit', 'exit', or 'bye' to end")
         print("  - Type 'clear' to clear conversation history")
+        print("  - Type 'voice off/on' to toggle SAM voice")
         print("  - Type 'help' to see this message again")
         print("-" * 50)
 
