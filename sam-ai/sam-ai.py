@@ -1,7 +1,5 @@
-# hello pls download the SAM executable for this to work and either set it to PATH permanently or run the script below in cmd
+# hello pls download the SAM executable for this to work and either set it to PATH permanently or run the command below in cmd
 # run [ set PATH=%PATH%;E:\path\asdfasdf ] to temp set SAM to PATH
-
-# also dont forget to put your api key in the .env file
 
 import openai
 import os
