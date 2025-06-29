@@ -53,9 +53,9 @@ class LinearRegressionModel(nn.Module): # <- almost everything in PyTorch inheri
                                              requires_grad=True,
                                              dtype=torch.float32))
         
-        # Forward method to define the computation in the model
-        def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data
-            return self.weights * x + self.bias # this is the linear regression data
+    # Forward method to define the computation in the model
+    def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data
+        return self.weights * x + self.bias # this is the linear regression data
         
 # PyTorch model building essentials
 #
