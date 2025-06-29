@@ -13,7 +13,7 @@ torch.manual_seed(42)
 model_0 = LinearRegressionModel()
 
 # Check out parameters
-print(list(model_0.parameters()))
+print(f"Check parameters:\n {list(model_0.parameters())}\n")
 
 # List named parameters
-model_0.state_dict()
+print(f"List named parameters:\n {model_0.state_dict()}\n")
