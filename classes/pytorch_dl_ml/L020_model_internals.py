@@ -1,4 +1,4 @@
-from L019_build_model import LinearRegressionModel
+from L019_build_model import *
 import torch
 
 # Checking the contents of our PyTorch model
@@ -14,3 +14,6 @@ model_0 = LinearRegressionModel()
 
 # Check out parameters
 print(list(model_0.parameters()))
+
+# List named parameters
+model_0.state_dict()
