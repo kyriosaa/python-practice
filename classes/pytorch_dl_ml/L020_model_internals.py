@@ -1,4 +1,4 @@
-import L019_build_model
+from L019_build_model import LinearRegressionModel
 import torch
 
 # Checking the contents of our PyTorch model
@@ -11,3 +11,6 @@ torch.manual_seed(42)
 
 # Create an instance of the model (this is a subclass of nn.Module)
 model_0 = LinearRegressionModel()
+
+# Check out parameters
+print(list(model_0.parameters()))

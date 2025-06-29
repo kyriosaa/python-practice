@@ -34,7 +34,7 @@ def plot_predictions(train_data = X_train,
         plt.scatter(test_data, predictions, c='r', s=4, label="Predictions")
     plt.legend(prop={"size": 14})
 plot_predictions()
-plt.show()
+# plt.show()    # uncomment if u want to see the graph
 # ----------------------------------------------------------------------
 
 # What our model does:
