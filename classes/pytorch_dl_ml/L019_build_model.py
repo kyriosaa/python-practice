@@ -55,7 +55,7 @@ class LinearRegressionModel(nn.Module): # <- almost everything in PyTorch inheri
         
     # Forward method to define the computation in the model
     def forward(self, x: torch.Tensor) -> torch.Tensor: # <- "x" is the input data
-        return self.weights * x + self.bias # this is the linear regression data
+        return self.weighs * x + self.bias # this is the linear regression data
         
 # PyTorch model building essentials
 #
